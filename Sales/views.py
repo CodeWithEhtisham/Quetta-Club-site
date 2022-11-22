@@ -123,8 +123,10 @@ def sales(request):
                     cname=request.POST.get('customer_name'),
                     address=request.POST.get('address'),
                     account_of=request.POST.get('account_of'),
-                    date=request.POST.get('date'),
-                    month=request.POST.get('month'),
+                    date=datetime.datetime.strptime(
+                        str(request.POST.get('date')), "%Y-%m-%d").date(),
+                    month=datetime.datetime.strftime(
+                        datetime.datetime.strptime(request.POST.get('month'),"%b-%y")    , "%b-%y"),
                     amount=request.POST.get('amount'),
                     discount=request.POST.get('discount'),
                     net_amount=request.POST.get('net_amount'),
