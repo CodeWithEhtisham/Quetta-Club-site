@@ -58,7 +58,7 @@ def long_process(df):
                         # date=datetime.datetime.strptime(
                         #     row['date'], "%d-%m-%Y").date(),
                         date=datetime.datetime.strptime(
-                            datetime.datetime.now().strftime("%d-%b-%Y"), "%d-%b-%Y").date(),
+                            datetime.datetime.strftime(row['date'], "%d-%b-%Y"), "%d-%b-%Y"),
                         # month-year
                         month=datetime.datetime.strftime(
                             row['month'], "%b-%y"),
@@ -81,7 +81,7 @@ def long_process(df):
                         #     row['date'], "%d-%b-%Y").date(),
                         # date=row['date'],
                         date=datetime.datetime.strptime(
-                            datetime.datetime.now().strftime("%d-%b-%Y"), "%d-%b-%Y").date(),
+                            datetime.datetime.strftime(row['date'], "%d-%b-%Y"), "%d-%b-%Y"),
                         month=datetime.datetime.strftime(
                             row['month'], "%b-%y"),
                         amount=row['amount'],
@@ -221,7 +221,7 @@ def delete_sale(request, pk):
 def view_sales(request):
 
     return render(request, "Sales/view_sales.html", {
-        'sales_data': Sales.objects.filter(net_amount__gt=0).select_related('customer_id').order_by("-bill_no"),
+        'sales_data': Sales.objects.filter(net_amount__gt=0).select_related('customer_id').order_by('-id'),
         'total_bills': Sales.objects.filter(net_amount__gt=0).count(),
         'total_amount': Sales.objects.filter(net_amount__gt=0).aggregate(Sum('amount'))['amount__sum'],
         'total_discount': Sales.objects.filter(net_amount__gt=0).aggregate(Sum('discount'))['discount__sum'],
@@ -368,22 +368,22 @@ def SearchbyName(request):
                 # field=
                 lookup=f'customer_id__{field}__icontains'
                 query=Q(**{lookup:value})
-                return Response(SalesSerializer(Sales.objects.filter(customer_id__customer_rank=rank).filter(query).order_by('-id'), many=True).data)
+                return Response(SalesSerializer(Sales.objects.filter(customer_id__customer_rank=rank,net_amount__gt=0).filter(query).order_by('-id'), many=True).data)
             else:
                 query=Q(**{lookup: value})
-                return Response(SalesSerializer(Sales.objects.select_related('customer_id').filter(customer_id__customer_rank=rank).filter(query).order_by('-id'), many=True).data)
+                return Response(SalesSerializer(Sales.objects.select_related('customer_id').filter(customer_id__customer_rank=rank,net_amount__gt=0).filter(query).order_by('-id'), many=True).data)
         else:
             if field=='customer_name':
                 lookup=f'customer_id__{field}__icontains'
                 query = Q(**{lookup: value})
-                return Response(SalesSerializer(Sales.objects.filter(query).order_by('-id'), many=True).data)
+                return Response(SalesSerializer(Sales.objects.filter(query,net_amount__gt=0).order_by('-id'), many=True).data)
             else:
                 query=Q(**{lookup: value})
-                return Response(SalesSerializer(Sales.objects.select_related('customer_id').filter(query).order_by('-id'), many=True).data)
+                return Response(SalesSerializer(Sales.objects.select_related('customer_id').filter(query,net_amount__gt=0).order_by('-id'), many=True).data)
     except Exception as e:
         lookup = f"customer_id__{field}__icontains"
         query=Q(**{lookup: value})
-        return Response(SalesSerializer(Sales.objects.select_related('customer_id').filter(customer_id__customer_rank=rank).filter(query).order_by('-id'), many=True).data)
+        return Response(SalesSerializer(Sales.objects.select_related('customer_id').filter(customer_id__customer_rank=rank,net_amount__gt=0).filter(query).order_by('-id'), many=True).data)
 
 
 @api_view(['GET'])
@@ -495,8 +495,9 @@ def sales_cancel_bill(request):
 def sales_upload(request):
     if request.method == "POST":
         jsons = request.data
-        print(jsons['myrows'][0])
+        # print(jsons['myrows'][0])
         for obj in jsons['myrows']:
+            print(obj['Month'],type(obj['Month']))
             if (Customers.objects.filter(customer_name=obj['Name'], customer_address=obj['Address'],customer_rank=obj['Rank']).exists()):
                 print('already customer ')
                 customer = Customers.objects.get(
@@ -506,7 +507,7 @@ def sales_upload(request):
                     PoS_no=obj['POS NO'],
                     created_date=datetime.datetime.strptime(
                         obj['Dated'], "%d-%m-%Y").date(),
-                    month=''.join(re.findall("[a-zA-Z]+", obj['Month'])),
+                    month=obj['Month'],
                     account_of=obj['On Account Of'],
                     amount=obj['Amount'],
                     net_amount=obj['Net Amount'],
@@ -527,7 +528,7 @@ def sales_upload(request):
                     PoS_no=obj['POS NO'],
                     created_date=datetime.datetime.strptime(
                         obj['Dated'], "%d-%m-%Y").date(),
-                    month=''.join(re.findall("[a-zA-Z]+", obj['Month'])),
+                    month=obj['Month'],
                     account_of=obj['On Account Of'],
                     amount=obj['Amount'],
                     net_amount=obj['Net Amount'],

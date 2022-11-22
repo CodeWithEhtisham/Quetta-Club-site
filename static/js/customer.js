@@ -293,19 +293,22 @@ function paidModalSubmit() {
   });
 
   let data;
-  if ($("#paid_amount").val() > $("#pay_bill_modal_balance").val()) {
+  let paid_amount=$("#paid_amount").val();
+  let paid_bill_modal_balance=$("#pay_bill_modal_balance").val();
+  let remaining_amount=paid_bill_modal_balance-paid_amount;
+ console.log(remaining_amount);
+  if (remaining_amount<0) {
     alert(
       "Paid amount is greater than Net Amount! Please enter less or equal Amount"
     );
-    return false;
+    // return false;
   } else {
     data = {
       id: $("#paid-form-id").val(),
       rv_no: $("#rv_no").val(),
       paid_date: $("#today-date").val(),
-      amount: $("#paid_amount").val(),
-      remaining_amount:
-        $("#pay_bill_modal_balance").val() - $("#paid_amount").val(),
+      amount: paid_amount,
+      remaining_amount: remaining_amount,
     };
   }
   console.log(data);
@@ -358,7 +361,11 @@ function compModalSubmit() {
   });
 
   let data;
-  if ($("#comp_amount").val() > $("#comp_bill_modal_balance").val()) {
+  let comp_amount=$("#comp_amount").val();
+  let comp_bill_modal_balance=$("#comp_bill_modal_balance").val();
+  let remaining_amount=comp_bill_modal_balance-comp_amount;
+  console.log(remaining_amount);
+  if (remaining_amount<0) {
     alert(
       "Complementary amount is greater than Net Amount! Please enter less or equal Amount"
     );
@@ -368,9 +375,8 @@ function compModalSubmit() {
       id: $("#comp-form-id").val(),
       comp_date: $("#comp-today-date").val(),
       comp_remarks: $("#comp_remarks").val(),
-      comp_amount: $("#comp_amount").val(),
-      remaining_amount:
-        $("#comp_bill_modal_balance").val() - $("#comp_amount").val(),
+      comp_amount: comp_amount,
+      remaining_amount: remaining_amount,
     };
   }
   $.ajax({
