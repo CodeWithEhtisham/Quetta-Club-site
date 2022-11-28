@@ -113,6 +113,7 @@ def logout_user(request):
     return render(request, 'Customers/signin.html')
 
 
+
 @login_required
 def customers(request):
     if request.method == 'POST':
@@ -238,8 +239,8 @@ def customer_update(request):
                       {'customer_data': Customers.objects.filter(id=request.GET.get("id")).first()})
 
 @login_required
-def delete_customer(request, pk):
-    query = Customers.objects.get(id=pk)
+def delete_customer(request):
+    query = Customers.objects.get(id=request.GET.get('did'))
     if request.method == 'POST':
         query.delete()
         messages.success(request, 'Customer Deleted Successful')
@@ -247,6 +248,8 @@ def delete_customer(request, pk):
     return render(request, 'Customers/delete_customer.html', {
         'querysale': query
     })
+
+
 
 @login_required
 def customer_details(request):
@@ -425,7 +428,7 @@ index_template = [
     path('customer_update/', customer_update, name='customer_update'),
     path('customer_bill/', customer_bill, name='customer_bill'),
     path('logout', logout_user, name='logout'),
-    path('delete_customer/<int:pk>/', delete_customer, name="delete_customer"),
+    path('delete_customer/', delete_customer, name="delete_customer"),
     # api url paths
     # path('api/SearchCustomer/', SearchCustomer, name='SearchCustomer'),
     path('api/customer/pay_bill/', pay_bill, name='pay_bill'),

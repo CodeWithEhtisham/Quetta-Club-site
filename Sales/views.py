@@ -547,9 +547,9 @@ def sales_upload(request):
 def SearchByRank(request):
     rank=request.GET.get('rank')
     if rank in ['Staff','Army','Members','Other']:
-        return Response(SalesSerializer(Sales.objects.select_related('customer_id').filter(customer_id__customer_rank=rank).order_by('-id'), many=True).data)
+        return Response(SalesSerializer(Sales.objects.select_related('customer_id').filter(customer_id__customer_rank=rank,net_amount__gt=0).order_by('-id'), many=True).data)
     else:
-        return Response(SalesSerializer(Sales.objects.select_related('customer_id').order_by('-id'), many=True).data)
+        return Response(SalesSerializer(Sales.objects.filter(net_amount__gt=0).select_related('customer_id').order_by('-id'), many=True).data)
 
 @api_view(['GET'])
 def SearchByRankReport(request):

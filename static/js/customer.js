@@ -123,10 +123,16 @@ function update_table(data) {
         '" style="text-align: center;">All Bills</a>' +
         '<a href="/customer_update/?id=' +
         elem["id"] +
+        '" style="background-color: #ae180d;">Edit</a>' +
+        '<a href="/delete_customer/?did=' +
+        elem["id"] +
         '" style="background-color: #1e659c;">Edit</a>' +
+
+
         "</div>" +
         "</td>" +
-        "</tr>";
+        
+        "</tr>" ;
     } else {
       row =
         "<tr>" +
