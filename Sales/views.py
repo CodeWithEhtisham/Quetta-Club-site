@@ -319,13 +319,23 @@ def reports(request):
         from_date=request.POST.get('from-date')
         to_date=request.POST.get('to-date')
         status=request.POST.get('check')
+        rank=request.POST.get('select-rank')
+        print("status ",status," rank ",rank)
         print(from_date,to_date,status)
+        
+
         if status:
             from_date = datetime.datetime.strptime(from_date, '%Y-%m-%d')
             to_date = datetime.datetime.strptime(to_date, '%Y-%m-%d')
+            if rank in ['Staff','Members','Army']:
+                print("rank************************* ",rank)
+                return render(request, 'Sales/reports.html', {
+                    'record': Bill.objects.select_related('sale_id').filter(sale_id__customer_id__customer_rank=rank,status=status,date__range=[from_date,to_date]).order_by('-id')
+                    })
             return render(request, 'Sales/reports.html', {
-                    'record': Bill.objects.select_related('sale_id').filter(status=status,date__range=[from_date,to_date] ).order_by('-id')
-                })
+                    'record': Bill.objects.select_related('sale_id').filter(status=status,date__range=[from_date,to_date]).order_by('-id')
+                    })
+
         else:
                 return render(request, 'Sales/reports.html', {
                     'record': Bill.objects.select_related('sale_id').filter(date__range=[from_date,to_date]).order_by('-id')

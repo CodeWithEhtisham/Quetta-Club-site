@@ -59,6 +59,8 @@
                 <div class="">
                     <div class="row">
                         <h2>Customers</h2>
+                        <form class="row" action="{% url 'Sales:reports' %}" method="post">
+                            {% csrf_token %}
                         <div class="form-group ml-5">
                             <select name="select-rank" id="select-rank" class="form-control" onchange="SearchByRankReport(this)">
                                 <option value="" selected>select rank</option>
@@ -84,8 +86,7 @@
 
                         </div>
                         <!--  -->
-                        <form class="row" action="{% url 'Sales:reports' %}" method="post">
-                            {% csrf_token %}
+                        
 
                             <div class="form-data ml-5">
                                 <label for="" class="form-label">Paid</label>
